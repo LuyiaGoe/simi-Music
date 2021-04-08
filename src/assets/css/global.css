@@ -33,9 +33,41 @@ body,
   text-align: left;
   padding: 0 !important;
   margin: 0 !important;
+  text-overflow: ellipsis!important;
 }
 .el-menu-item {
   padding-left: 15px !important;
+  padding-right: 15px!important;
   height: 35px !important;
   line-height: 35px !important;
+  width: 180px!important;
+  text-overflow: ellipsis!important;
+}
+
+/* 发现页tab栏样式 */
+.el-tabs__active-bar {
+  background-color: rgb(236, 65, 65);
+}
+.el-tabs__item.is-active{
+  color: black;
+  font-weight: 800;
+  font-size: 17px;
+}
+
+
+/* 轮播图 */
+.el-carousel__item--card.is-in-stage img {
+  width: 100% !important;
+  height: 100%;
+}
+
+/* 消除歌曲列表出现空白的bug */
+.el-row {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+/* 按钮激活和经过 */
+.el-button:focus, .el-button:hover{
+  color: rgb(236, 65, 65);
 }

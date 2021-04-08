@@ -111,22 +111,19 @@
 
       <!-- 底部区域 -->
       <el-footer>
+        <!-- 歌曲信息 -->
         <div class="musicPic">
-          <img src="../..\public\imgs\userIcon.png" alt="" />
+          <img src="../..\public\imgs\logo.png" alt="" />
           <div>
             <p>歌曲名</p>
             <p>歌手</p>
           </div>
         </div>
+
         <!-- 进度条组件 -->
-        <el-row
-          style="
-            border-top: 1px solid rgb(230, 230, 230);
-            background-color: white;
-          "
-        >
-          <!--一首 暂停 下一首控件-->
-          <el-col :span="2.5">
+        <div>
+          <!-- 上一首 播放/暂停 下一首控件 -->
+          <div class="playitems">
             <img
               src="../..\public\imgs\prev.png"
               alt=""
@@ -164,11 +161,11 @@
               alt=""
               style="border-radius: 100%; cursor: pointer; margin-left: 25px"
             />
-          </el-col>
+          </div>
 
-          <el-col style="position: relative" :span="12" :offset="2">
-            <!--秒数通过 过滤器处理成看得懂的样式-->
-            <span style="position: absolute; top: 11px; left: -10px">{{
+          <!-- 滑动条控件 -->
+          <div class="slidediv">
+            <span class="playtimes starttime">{{
               this.musicDuration | timeFormat
             }}</span>
 
@@ -179,36 +176,31 @@
               :show-tooltip="true"
             ></el-slider>
 
-            <span style="position: absolute; left: 94%; bottom: 25%">{{
+            <span class="playtimes stoptime">{{
               totalDuration | timeFormat
             }}</span>
-          </el-col>
+          </div>
+        </div>
 
-          <el-col :span="5" style="position: relative" :offset="1">
-            <!--音量控制-->
-            <img
-              src="imgs/laba.png"
-              v-if="musicVolume !== 0"
-              alt=""
-              class="laba"
-            />
+        <!--音量控制-->
+        <div class="volumediv">
+          <img src="imgs/songList.png" alt="" />
+          <img
+            src="imgs/laba.png"
+            v-if="silentflag == false"
+            class="laba"
+            slot="reference"
+          />
 
-            <img src="imgs/shutUp.png" v-else alt="" class="laba" />
-
-            <img
-              src="imgs/songList.png"
-              alt=""
-              style="position: absolute; top: 10px; right: 9%; cursor: pointer"
-            />
-
-            <el-slider
-              v-model="musicVolume"
-              :show-tooltip="false"
-              style="width: 40%"
-            >
-            </el-slider>
-          </el-col>
-        </el-row>
+          <img
+            src="imgs/shutUp.png"
+            v-else
+            alt=""
+            class="laba"
+            slot="reference"
+          />
+          <el-slider v-model="musicVolume" :show-tooltip="false"> </el-slider>
+        </div>
 
         <audio :src="musicUrl" autoplay class="playMusicAudio"></audio>
       </el-footer>
@@ -323,7 +315,9 @@ export default ({
       //搜索条件
       searchData: '',
       // 侧边栏大小
-      asideHeight: '800px'
+      asideHeight: '800px',
+      // 静音标识
+      silentflag: false
     }
   },
   created () {
@@ -341,8 +335,7 @@ export default ({
     getUserPrivatePlayList () {
       this.$http.get('user/playlist', { params: { uid: this.currentUserInfo.userId } }).then(r => {
         this.currentUserPlayList = r.data.playlist
-        console.log(r)
-      })
+      }).catch(err => err)
     },
 
     // 弹出登录框
@@ -355,7 +348,6 @@ export default ({
       this.$refs.loginRef.validate(valid => {
         if (!valid) return this.$message.error('请填写正确的信息')
         this.$http.get('login/cellphone', { params: this.loginInfo }).then(res => {
-          console.log(res)
           if (res.status !== 200) return this.$message.error('登陆失败,请检查登录信息!')
           //保存cookie的信息
           window.localStorage.setItem('musicCookie', res.data.cookie)
@@ -397,6 +389,13 @@ export default ({
       if (!n) {
         this.$refs.loginRef.resetFields()
       }
+    },
+    musicVolume (n) {
+      if (!n) {
+        this.silentflag = true
+      } else {
+        this.silentflag = false
+      }
     }
   }
 })
@@ -414,10 +413,10 @@ export default ({
 .shuiping {
   display: flex;
   flex-grow: 1;
+  padding: 60px 0 85px;
 }
 .el-header,
 .el-footer {
-  background-color: #b3c0d1;
   color: #333;
   text-align: center;
   line-height: 60px;
@@ -429,25 +428,32 @@ export default ({
   width: 100%;
   padding: 0;
   justify-content: space-between;
+  background-color: rgb(246, 246, 248);
+  height: 85px !important;
 }
 .el-header {
   justify-content: space-between;
+  background-color: rgb(236, 65, 65);
+  color: #fff;
+  position: fixed;
+  width: 100%;
+  z-index: 500;
 }
 .el-header div {
   display: inline-block;
   height: 100%;
 }
 .el-aside {
-  padding-bottom: 60px;
-  background-color: #d3dce6;
+  background-color: #fff;
   color: #333;
   text-align: center;
   overflow: hidden;
   overflow-y: auto;
+  border-right: 1px solid rgb(230, 230, 230);
 }
 
 .el-main {
-  background-color: #e9eef3;
+  background-color: #fff;
   color: #333;
   width: 100%;
   overflow: hidden;
@@ -519,9 +525,79 @@ body > .el-container {
   cursor: pointer;
   border-radius: 30%;
 }
-
-/* 主体系列 */
+.el-menu-item.is-active {
+  color: black;
+  border-left: 2px solid red !important;
+}
+/* 主题系列 */
 .redTheme {
   color: red;
+}
+
+/* 脚部歌曲信息 */
+.musicPic {
+  display: flex;
+  width: 200px;
+}
+.musicPic img {
+  width: 55px;
+  height: 55px;
+  margin: 11px 10px;
+  border-radius: 10px;
+}
+.musicPic div {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  margin-bottom: 12px;
+}
+.musicPic p {
+  text-align: left;
+  margin: 0;
+  margin-bottom: 8px;
+  height: 15px;
+  font-size: 15px;
+  line-height: 15px;
+}
+
+/* 播放控件 */
+.playitems {
+  margin-top: 8px;
+  height: 40px;
+}
+.slidediv {
+  width: 450px;
+  position: relative;
+}
+.slidediv .el-slider {
+  width: 75%;
+  margin: auto;
+}
+.playtimes {
+  position: absolute;
+  height: 30px;
+  line-height: 30px;
+  top: 10%;
+}
+.starttime {
+  left: 0;
+}
+.stoptime {
+  right: 0;
+}
+
+/* 音量区域 */
+.volumediv {
+  width: 200px;
+  display: flex;
+  align-items: center;
+}
+.volumediv img {
+  width: 20px;
+  height: 20px;
+  margin-right: 15px;
+}
+.volumediv .el-slider {
+  width: 100px;
 }
 </style>
