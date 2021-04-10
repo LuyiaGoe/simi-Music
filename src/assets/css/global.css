@@ -67,7 +67,36 @@ body,
   flex-wrap: wrap;
 }
 
-/* 按钮激活和经过 */
+/* 按钮 */
 .el-button:focus, .el-button:hover{
   color: rgb(236, 65, 65);
 }
+.el-button {
+  padding: 8px 18px;
+  vertical-align: middle;
+}
+.el-button [class*="el-icon-"] + span {
+  margin: 0;
+}
+.el-icon-folder-add:before,
+.el-icon-caret-right:before{
+  font-size: 20px;
+  vertical-align: middle;
+}
+.el-icon-folder-add:before {
+  margin-right: 5px;
+}
+.addList[data-v-223a95da]{
+  margin: 0;
+}
+
+/* el-table强制不换行并用省略号代替 */
+.el-table .cell{
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+.el-progress-bar__outer {
+  margin-top: 4px ;
+}
+

@@ -1,7 +1,7 @@
 <template>
-  <div>
+  <div class="findMusicContainer">
     <el-tabs v-model="tabname" @tab-click="handleClick">
-      <el-tab-pane label="个性推荐" name="diyRecommend"> </el-tab-pane>
+      <el-tab-pane label="  个性推荐" name="diyRecommend"> </el-tab-pane>
       <el-tab-pane label="歌单" name="musicListPage"> </el-tab-pane>
       <el-tab-pane label="排行榜" name="musicRank"> </el-tab-pane>
       <el-tab-pane label="歌手" name="singerList"> </el-tab-pane>
@@ -36,6 +36,10 @@ export default ({
 </script>
 
 <style scoped>
+.findMusicContainer {
+  width: 95%;
+  margin: auto;
+}
 .el-tabs__active-bar {
   background-color: black !important;
 }

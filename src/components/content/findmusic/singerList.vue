@@ -132,6 +132,8 @@ export default {
 }
 .el-button {
   color: black;
+  padding: 0;
+  margin: 12px 0;
 }
 .el-divider--vertical {
   margin: 0 12px;
@@ -145,9 +147,5 @@ export default {
 h1 {
   font-size: 8px;
   margin: 6px 0 24px;
-}
-.el-button {
-  padding: 0;
-  margin: 12px 0;
 }
 </style>

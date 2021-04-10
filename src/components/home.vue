@@ -105,7 +105,7 @@
 
         <!-- 主体区域 -->
         <el-main>
-          <router-view></router-view>
+          <router-view :key="$route.path"></router-view>
         </el-main>
       </div>
 
@@ -335,6 +335,7 @@ export default ({
     getUserPrivatePlayList () {
       this.$http.get('user/playlist', { params: { uid: this.currentUserInfo.userId } }).then(r => {
         this.currentUserPlayList = r.data.playlist
+        sessionStorage.setItem('userPlayList', JSON.stringify(this.currentUserPlayList))
       }).catch(err => err)
     },
 

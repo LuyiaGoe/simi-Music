@@ -8,10 +8,14 @@ import musicListPage from '../components/content/findmusic/musicListPage.vue'
 import musicRank from '../components/content/findmusic/musicRank.vue'
 import singerList from '../components/content/findmusic/singerList.vue'
 import newMusicList from '../components/content/findmusic/newMusicList.vue'
+import playPage from '../components/content/playlist/songlist.vue'
+import list from '../components/content/playlist/list.vue'
+import comment from '../components/content/playlist/comment.vue'
+import subscribed from '../components/content/playlist/subscribed.vue'
+import cloud from '../components/content/user/cloud.vue'
 
 
 Vue.use(VueRouter) //启用路由
-
 // 设定路由地址
 const routes = [
   {
@@ -30,6 +34,15 @@ const routes = [
           { path: '/singerList', component: singerList },
           { path: '/newMusicList', component: newMusicList },
         ]
+      }, {
+        path: '/songlist/:id', component: playPage, redirect: '/list/:id',
+        children: [
+          { path: '/list/:id', component: list },
+          { path: '/comment/:id', component: comment },
+          { path: '/subscribed/:id', component: subscribed }
+        ]
+      }, {
+        path: '/cloudMusic', component: cloud
       }
     ]
   }
