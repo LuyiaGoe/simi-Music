@@ -89,7 +89,7 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
 
 ### 碰到的问题
 1. 有些样式在当前页面内无法更改，甚至添加！important也没用，如何区分，如何变更
- + 有些样式可以在global.css中定义并更改，并在HTML文件中引入，原因尚需思考
+ + 有些样式可以在global.css中定义并更改，并在HTML文件中引入，原因尚需思考,如圆角按钮和方角按钮，一个需要！impotant才能改padding，一个不需要
 2. 出现相同path，不同query的路由请求，却不触发跳转的情况
  + 在标签内添加：key属性，<router-view :key="$route.path"></router-view>，原因需了解
  + 音乐播放列表出现子路由变换，父组件却重新渲染的问题，原因在于上一条的：key属性，只要key值发生变动，父组件就会重新渲染，此时path中已经换了，导致无法根据path中的params按需（如，根据id找到歌单信息）请求静态资源，导致父组件渲染失败，暂时解决方法是让子路由带上父组件的params

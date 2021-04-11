@@ -13,6 +13,9 @@ import list from '../components/content/playlist/list.vue'
 import comment from '../components/content/playlist/comment.vue'
 import subscribed from '../components/content/playlist/subscribed.vue'
 import cloud from '../components/content/user/cloud.vue'
+import videoPage from '../components/content/video/videoPage.vue'
+import video from '../components/content/video/video.vue'
+import mv from '../components/content/video/mv.vue'
 
 
 Vue.use(VueRouter) //启用路由
@@ -43,6 +46,12 @@ const routes = [
         ]
       }, {
         path: '/cloudMusic', component: cloud
+      }, {
+        path: '/videoPage', component: videoPage, redirect: '/video',
+        children: [
+          { path: '/video', component: video },
+          { path: '/mv', component: mv },
+        ]
       }
     ]
   }

@@ -65,7 +65,7 @@
             <el-menu-item-group>
               <template slot="title">推荐</template>
               <el-menu-item index="/findMusic">发现音乐</el-menu-item>
-              <el-menu-item index="/video">视频</el-menu-item>
+              <el-menu-item index="/videoPage">视频</el-menu-item>
             </el-menu-item-group>
 
             <el-menu-item-group>

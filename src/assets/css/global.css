@@ -83,6 +83,10 @@ body,
   font-size: 20px;
   vertical-align: middle;
 }
+.videoRight .el-icon-caret-right:before{
+  font-size: 15px;
+  vertical-align: middle;
+}
 .el-icon-folder-add:before {
   margin-right: 5px;
 }
