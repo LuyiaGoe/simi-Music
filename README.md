@@ -85,6 +85,12 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
  + 制作评论页
  + 制作收藏者页
 
+### 视频页面制作
+1. 视频和mv清单页面制作
+2. 视频播放页面制作
+3. mv播放页面制作
+ + 与视频播放页面一致，但是采用的api不同，因此进行了合并
+
 
 
 ### 碰到的问题

@@ -16,6 +16,7 @@ import cloud from '../components/content/user/cloud.vue'
 import videoPage from '../components/content/video/videoPage.vue'
 import video from '../components/content/video/video.vue'
 import mv from '../components/content/video/mv.vue'
+import videoPlayPage from '../components/content/video/videoPlayPage.vue'
 
 
 Vue.use(VueRouter) //启用路由
@@ -50,8 +51,10 @@ const routes = [
         path: '/videoPage', component: videoPage, redirect: '/video',
         children: [
           { path: '/video', component: video },
-          { path: '/mv', component: mv },
+          { path: '/mv', component: mv }
         ]
+      }, {
+        path: '/videoPlayPage/:id', component: videoPlayPage
       }
     ]
   }

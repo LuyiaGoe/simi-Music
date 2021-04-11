@@ -1,116 +1,147 @@
 <template>
   <div>
-    <!-- 标签区域 -->
-    <div
-      style="display: flex; justify-content: space-between; margin-bottom: 15px"
-    >
-      <div>
-        <el-popover
-          class="pop"
-          placement="bottom-start"
-          width="650"
-          trigger="click"
-        >
-          <el-row class="popheight">
-            <el-col
-              ><el-button type="text" disabled style="cursor: default"
-                >全部视频</el-button
-              ></el-col
-            >
-            <el-divider></el-divider>
-            <el-col :span="4" v-for="(item, index) in groupList" :key="index">
-              <el-button type="text" @click="getId(item.id)">{{
-                item.name
-              }}</el-button>
-            </el-col>
-          </el-row>
-          <el-button slot="reference" round class="allVideos"
-            >全部视频&nbsp;&nbsp;&nbsp;></el-button
-          >
-        </el-popover>
+    <!-- 最新mv -->
+    <div>
+      <div
+        style="
+          display: flex;
+          justify-content: space-between;
+          margin-bottom: 0px;
+        "
+      >
+        <div>
+          <p>最新MV</p>
+        </div>
+        <!-- 分类区域 -->
+        <div>
+          <span v-for="(item, index) in mvArea" :key="index">
+            <el-button type="text" @click="getArea(item.name)">{{
+              item.name == "" ? "全部" : item.name
+            }}</el-button>
+            <el-divider
+              direction="vertical"
+              v-if="item.id !== 2100"
+            ></el-divider>
+          </span>
+        </div>
       </div>
 
-      <!-- 分类区域 -->
+      <!-- 内容区域 -->
       <div>
-        <span v-for="item in catList" :key="item.id">
-          <el-button type="text" @click="getId(item.id)">{{
-            item.name
-          }}</el-button>
-          <el-divider direction="vertical" v-if="item.id !== 2100"></el-divider>
-        </span>
+        <el-row :gutter="20">
+          <el-col
+            :span="6"
+            v-for="(item, index) in videoList"
+            style="margin-top: 20px; position: relative"
+            :key="index"
+          >
+            <div style="position: relative" class="imgcontainer">
+              <!--播放量-->
+              <div
+                style="
+                  background: rgba(128, 128, 128, 0.2);
+                  color: white;
+                  width: 100%;
+                  position: absolute;
+                  z-index: 10;
+                "
+                class="videosection"
+              >
+                <div style="float: right">
+                  <i class="el-icon-headset" style="margin-right: 5px"></i>
+                  {{
+                    item.playCount >= 10000
+                      ? (item.playCount / 10000).toFixed(0) + "万"
+                      : item.playCount
+                  }}
+                </div>
+              </div>
+              <el-image
+                :src="item.cover"
+                @click="toVideoPage(item.id)"
+                style="
+                  box-shadow: 0 0 2px 2px gray;
+                  border-radius: 10px;
+                  cursor: pointer;
+                "
+              >
+              </el-image>
+            </div>
+
+            <h1
+              @click="toVideoPage(item.id)"
+              style="cursor: pointer"
+              class="title"
+            >
+              {{ item.name }}
+            </h1>
+          </el-col>
+        </el-row>
       </div>
     </div>
 
-    <!-- 内容区域 -->
+    <!-- 网易出品 -->
     <div>
-      <el-row :gutter="20">
-        <el-col
-          :span="6"
-          v-for="(item, index) in videoList"
-          style="margin-top: 20px; position: relative"
-          :key="index"
-        >
-          <div style="position: relative">
-            <!--播放量-->
-            <div
-              style="
-                background: rgba(128, 128, 128, 0.2);
-                color: white;
-                width: 100%;
-                position: absolute;
-                z-index: 10;
-              "
-              class="videosection"
-            >
-              <div style="float: right">
-                <i class="el-icon-headset" style="margin-right: 5px"></i>
-                {{
-                  item.data.playTime >= 10000
-                    ? (item.data.playTime / 10000).toFixed(0) + "万"
-                    : item.data.playTime
-                }}
-              </div>
-            </div>
-            <el-image
-              :src="item.data.coverUrl"
-              @click="toVideoPage(item.data.vid)"
-              style="
-                box-shadow: 0 0 2px 2px gray;
-                border-radius: 10px;
-                cursor: pointer;
-              "
-            >
-            </el-image>
-          </div>
+      <div
+        style="display: flex; justify-content: space-between; margin-top: 10px"
+      >
+        <div>
+          <p>网易出品</p>
+        </div>
+      </div>
 
-          <h1
-            @click="toVideoPage(item.data.vid)"
-            style="cursor: pointer"
-            class="title"
+      <!-- 内容区域 -->
+      <div>
+        <el-row :gutter="20">
+          <el-col
+            :span="6"
+            v-for="(item, index) in hotvideoList"
+            style="margin-top: 20px; position: relative"
+            :key="index"
           >
-            {{ item.data.title }}
-          </h1>
-        </el-col>
-      </el-row>
-      <el-button
-        round
-        icon="el-icon-caret-left"
-        @click="changeOffset(-1)"
-        v-if="offset"
-      ></el-button>
-      <el-button
-        round
-        icon="el-icon-caret-left"
-        disabled
-        class="videoRight"
-        v-if="!offset"
-      ></el-button>
-      <el-button
-        round
-        icon="el-icon-caret-right"
-        class="videoRight"
-        @click="changeOffset(1)"
-      ></el-button>
+            <div style="position: relative">
+              <!--播放量-->
+              <div
+                style="
+                  background: rgba(128, 128, 128, 0.2);
+                  color: white;
+                  width: 100%;
+                  position: absolute;
+                  z-index: 10;
+                "
+                class="videosection"
+              >
+                <div style="float: right">
+                  <i class="el-icon-headset" style="margin-right: 5px"></i>
+                  {{
+                    item.playCount >= 10000
+                      ? (item.playCount / 10000).toFixed(0) + "万"
+                      : item.playCount
+                  }}
+                </div>
+              </div>
+              <el-image
+                :src="item.cover"
+                @click="toVideoPage(item.id)"
+                style="
+                  box-shadow: 0 0 2px 2px gray;
+                  border-radius: 10px;
+                  cursor: pointer;
+                "
+              >
+              </el-image>
+            </div>
+
+            <h1
+              @click="toVideoPage(item.id)"
+              style="cursor: pointer"
+              class="title"
+            >
+              {{ item.name }}
+            </h1>
+          </el-col>
+        </el-row>
+      </div>
     </div>
   </div>
 </template>
@@ -120,14 +151,23 @@
 export default ({
   data () {
     return {
-      // 视频标签清单
-      groupList: [],
-      // 视频分类清单
-      catList: [],
+      // 最新mv地区清单
+      mvArea: [
+        { name: '' },
+        { name: '内地' },
+        { name: '港台' },
+        { name: '欧美' },
+        { name: '日本' },
+        { name: '韩国' }
+      ],
+      // 地区选择
+      area: '',
       // 标签、分类id
       gcId: 58100,
-      // 视频列表清单
+      // 最新mv列表清单
       videoList: [],
+      // 网易出品列表清单
+      hotvideoList: [],
       // 分页标签
       offset: 0
     }
@@ -135,7 +175,8 @@ export default ({
   created () {
     this.getVideoGroup()
     this.getVidoCat()
-    this.getId()
+    this.getArea()
+    this.gethotvideo()
   },
   methods: {
     // 获取视频标签列表
@@ -151,19 +192,26 @@ export default ({
       })
     },
     // 通过视频分类或标签请求视频列表
-    getId (num) {
+    getArea (name) {
       if (window.localStorage.getItem('currentUserInfo') === 'null') {
         return this.$message.error('需要登录获取视频数据!')
       }
-      if (num) this.gcId = num
-      this.$http.get(`/video/group?id=${this.gcId}`, { params: { offset: this.offset } }).then(res => {
-        this.videoList = res.data.datas
+      this.area = name
+      this.$http.get(`/mv/first?limit=8`, { params: { area: this.area } }).then(res => {
+        this.videoList = res.data.data
       })
     },
-    // 换页
-    changeOffset (num) {
-      this.offset += num
-      this.getId()
+    // 获取网易mv
+    gethotvideo () {
+      this.$http.get(`/mv/exclusive/rcmd?limit=8`).then(res => {
+        this.hotvideoList = res.data.data
+        console.log(res)
+        console.log(this.hotvideoList);
+      })
+    },
+    // 跳转到mv播放
+    toVideoPage (id) {
+      this.$router.push(`/videoPlayPage/${id}`)
     }
   }
 })
@@ -198,5 +246,14 @@ export default ({
 }
 .el-button {
   color: black;
+}
+.imgcontainer {
+  width: 100%;
+  height: 80%;
+}
+.el-image {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
 }
 </style>

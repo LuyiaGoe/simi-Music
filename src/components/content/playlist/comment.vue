@@ -87,7 +87,6 @@ export default {
   methods: {
     getComment () {
       this.$http.get('/comment/playlist', { params: { id: this.$route.params.id } }).then(res => {
-        console.log(res);
         this.commentInfo = res.data.comments
         this.hotComments = res.data.hotComments
       })

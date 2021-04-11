@@ -90,6 +90,10 @@ body,
 .el-icon-folder-add:before {
   margin-right: 5px;
 }
+.topandbottomPadding12 .el-icon-folder-add:before{
+
+  font-size: 15px;
+}
 .addList[data-v-223a95da]{
   margin: 0;
 }

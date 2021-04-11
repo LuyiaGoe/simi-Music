@@ -164,6 +164,10 @@ export default ({
     changeOffset (num) {
       this.offset += num
       this.getId()
+    },
+    // 跳转到mv播放
+    toVideoPage (id) {
+      this.$router.push(`/videoPlayPage/${id}`)
     }
   }
 })
