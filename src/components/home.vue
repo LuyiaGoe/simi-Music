@@ -105,7 +105,8 @@
 
         <!-- 主体区域 -->
         <el-main>
-          <router-view :key="$route.path"></router-view>
+          <!-- play事件用于子组件（歌单页面的playAll触发）触发播放 -->
+          <router-view :key="$route.path" @play="getSongDetail"></router-view>
         </el-main>
       </div>
 
@@ -113,10 +114,13 @@
       <el-footer>
         <!-- 歌曲信息 -->
         <div class="musicPic">
-          <img src="../..\public\imgs\logo.png" alt="" />
+          <img :src="music.al.picUrl" alt="" v-if="music.al.picUrl" />
+          <img src="../..\public\imgs\logo.png" v-else alt="" />
           <div>
-            <p>歌曲名</p>
-            <p>歌手</p>
+            <p>{{ music.name }}</p>
+            <p>
+              {{ music.ar[0].name }}
+            </p>
           </div>
         </div>
 
@@ -128,6 +132,7 @@
               src="../..\public\imgs\prev.png"
               alt=""
               style="border-radius: 100%; cursor: pointer"
+              @click="switchMusic(-1)"
             />
 
             <img
@@ -141,6 +146,7 @@
                 width: 40px;
                 height: 40px;
               "
+              @click="swichPlayStatus(0)"
             />
 
             <img
@@ -154,12 +160,14 @@
                 width: 40px;
                 height: 40px;
               "
+              @click="swichPlayStatus(1)"
             />
 
             <img
               src="../..\public\imgs\next.png"
               alt=""
               style="border-radius: 100%; cursor: pointer; margin-left: 25px"
+              @click="switchMusic(1)"
             />
           </div>
 
@@ -173,7 +181,8 @@
             <el-slider
               v-model="musicDuration"
               :max="totalDuration"
-              :show-tooltip="true"
+              :show-tooltip="false"
+              @change="musicDurationChange"
             ></el-slider>
 
             <span class="playtimes stoptime">{{
@@ -182,7 +191,7 @@
           </div>
         </div>
 
-        <!--音量控制-->
+        <!--歌单、音量控制-->
         <div class="volumediv">
           <img src="imgs/songList.png" alt="" />
           <img
@@ -190,6 +199,8 @@
             v-if="silentflag == false"
             class="laba"
             slot="reference"
+            style="cursor: pointer"
+            @click="silentflag = !silentflag"
           />
 
           <img
@@ -198,12 +209,23 @@
             alt=""
             class="laba"
             slot="reference"
+            style="cursor: pointer"
+            @click="silentflag = !silentflag"
           />
-          <el-slider v-model="musicVolume" :show-tooltip="false"> </el-slider>
+          <el-slider
+            v-model="musicVolume"
+            :show-tooltip="false"
+            @change="changeVolume"
+          >
+          </el-slider>
         </div>
-
-        <audio :src="musicUrl" autoplay class="playMusicAudio"></audio>
       </el-footer>
+      <audio
+        :src="musicUrl"
+        autoplay
+        class="playMusicAudio"
+        ref="audio"
+      ></audio>
     </el-container>
 
     <!-- 登录对话框 -->
@@ -281,7 +303,7 @@ export default ({
       //总进度条
       totalDuration: 0,
       //音乐的音量
-      musicVolume: 20,
+      musicVolume: 100,
       //默认是否在播放
       isPlay: false,
       //播放列表
@@ -324,6 +346,7 @@ export default ({
     if (this.currentMusicListInfo !== null) {
       this.getUserPrivatePlayList()
     }
+    this.getSongDetail()
   },
   methods: {
     // 返回首页
@@ -376,6 +399,67 @@ export default ({
         this.currentUserPlayList = []
       })
     },
+
+    // 获取音乐详情
+    getSongDetail () {
+      let playingId = this.$store.state.playingId
+      this.$http.get(`/song/detail?ids=${playingId}`).then(res => {
+        console.log('detail');
+        console.log(res);
+        this.music = res.data.songs[0]
+      })
+      this.$http.get(`/song/url?id=${playingId}`).then(res => {
+        this.musicUrl = res.data.data[0].url
+        this.getMusicInfo()
+      })
+    },
+
+    // 获取播放信息
+    getMusicInfo () {
+      let audio = document.querySelectorAll('.playMusicAudio')[0]
+      audio.addEventListener("timeupdate", () => {
+        if (!audio.duration) return this.isPlay = false
+        this.totalDuration = audio.duration | '00:00'
+        this.musicDuration = audio.currentTime | '00:00'
+        //当前歌曲播放完毕自动播放下一首
+        if (audio.currentTime >= audio.duration) {
+          this.switchMusic(1)
+        }
+      })
+      this.isPlay = true
+    },
+
+    // 拖动条变化
+    musicDurationChange () {
+      // let audio = document.querySelector('.playMusicAudio')
+      let audio = this.$refs.audio
+      audio.currentTime = this.musicDuration
+
+    },
+
+    // 切歌
+    switchMusic (num) {
+      this.$store.commit('switchsong', num)
+      this.getSongDetail()
+    },
+
+    // 切换播放状态
+    swichPlayStatus (num) {
+      let audio = document.querySelector('.playMusicAudio')
+      if (!num) {
+        audio.pause()
+      } else {
+        audio.play()
+      }
+      this.isPlay = !this.isPlay
+    },
+
+    // 音量控制
+    changeVolume () {
+      let audio = this.$refs.audio
+      audio.volume = this.musicVolume / 100
+    },
+
 
     // 自动填入！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！
     tianru () {
@@ -511,6 +595,7 @@ body > .el-container {
 .nickname {
   margin-left: 8px;
 }
+
 .logoutBtn {
   margin-left: 8px;
 }
@@ -549,16 +634,17 @@ body > .el-container {
 .musicPic div {
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
+  justify-content: flex-start;
   margin-bottom: 12px;
 }
 .musicPic p {
   text-align: left;
   margin: 0;
-  margin-bottom: 8px;
+  margin-top: 17px;
   height: 15px;
   font-size: 15px;
   line-height: 15px;
+  white-space: nowrap;
 }
 
 /* 播放控件 */

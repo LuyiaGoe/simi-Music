@@ -8,6 +8,7 @@ import nprogress from 'nprogress'
 import 'nprogress/nprogress.css'
 import './plugins/element.js'
 import './assets/css/global.css'
+import store from './store'
 
 axios.defaults.baseURL = '/api' // 为axios请求设置根路径,跨域配置放在vue.config.js中
 // 在request拦截器中添加进度条
@@ -112,5 +113,6 @@ Vue.use(ElementUI)
 
 new Vue({
   router,
-  render: h => h(App),
+  store,
+  render: h => h(App)
 }).$mount('#app')

@@ -27,11 +27,18 @@ export default {
     this.getListDet()
   },
   methods: {
+    // 获取到列表详情，即歌单
     getListDet () {
       this.$http.get('/playlist/detail', { params: { id: this.$route.params.id } }).then(res => {
         console.log(res)
         this.playDetails = res.data.playlist.tracks
+        this.passDetail()
       }).catch(err => err)
+    },
+
+    // 触发父组件的事件playingList，并传递歌单
+    passDetail () {
+      this.$emit('playingList', this.playDetails)
     }
   }
 }

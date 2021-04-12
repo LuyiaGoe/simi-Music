@@ -54,6 +54,13 @@ body,
   font-size: 17px;
 }
 
+/* 滚动条 */
+.el-slider__bar {
+  background-color: rgb(236, 65, 65) ;
+}
+.el-slider__button{
+  border: rgb(236, 65, 65);
+}
 
 /* 轮播图 */
 .el-carousel__item--card.is-in-stage img {

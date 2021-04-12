@@ -24,7 +24,12 @@
 
         <!-- 操作 -->
         <div style="margin-top: 10px">
-          <el-button type="danger" icon="el-icon-caret-right" class="playAll">
+          <el-button
+            type="danger"
+            icon="el-icon-caret-right"
+            class="playAll"
+            @click="playAll()"
+          >
             全部播放
           </el-button>
           <el-button
@@ -105,7 +110,7 @@
       </el-menu>
 
       <!-- 内容路由 -->
-      <router-view></router-view>
+      <router-view @playingList="getplayingList"></router-view>
     </div>
   </div>
 </template>
@@ -120,7 +125,9 @@ export default {
       songlist: {},
       // 用户歌单收藏按钮禁用flag
       userListFlag: true,
-      activeIndex: '/list/'
+      activeIndex: '/list/',
+      // 用于父子组件传值的歌单列表
+      playingList: []
     }
   },
   created () {
@@ -133,10 +140,10 @@ export default {
     // 按照route传来的id获取歌单信息
     getSonglist () {
       let listId = this.$route.params.id
-      // 用户歌单
+      // 用户歌单清单
       let userSongList = JSON.parse(sessionStorage.getItem('userPlayList'))
 
-      // 通过id找到歌单
+      // 通过id找到指定歌单
       userSongList.some(item => {
         if (item.id == listId) {
           this.songlist = item
@@ -145,6 +152,17 @@ export default {
         }
       })
     },
+
+    // 全部播放按钮，将歌单替换掉,并触发home的播放
+    playAll () {
+      this.$store.commit('switchPlayingList', this.playingList)
+      this.$emit('play')
+    },
+
+    // 从子路由处获取到的歌单信息
+    getplayingList (detail) {
+      this.playingList = detail
+    }
   }
 }
 </script>
