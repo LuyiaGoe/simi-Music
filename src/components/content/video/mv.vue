@@ -10,7 +10,7 @@
         "
       >
         <div>
-          <p>最新MV</p>
+          <p class="sectiontitle">最新MV</p>
         </div>
         <!-- 分类区域 -->
         <div>
@@ -86,7 +86,7 @@
         style="display: flex; justify-content: space-between; margin-top: 10px"
       >
         <div>
-          <p>网易出品</p>
+          <p class="sectiontitle">网易出品</p>
         </div>
       </div>
 
@@ -220,6 +220,9 @@ export default ({
   border-radius: 10px;
   overflow: hidden;
   right: 0;
+}
+.sectiontitle {
+  font-weight: 800;
 }
 .title {
   font-weight: 400;

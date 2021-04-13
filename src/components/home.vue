@@ -29,10 +29,7 @@
               class="userIcon_unlogin"
               @click="loginDialog"
             />
-            <el-tag
-              effect="plain"
-              @click="loginDialogVisible = true"
-              class="logina"
+            <el-tag effect="plain" @click="loginDialog" class="logina"
               >登录</el-tag
             >
           </div>
@@ -284,7 +281,7 @@
       width="300px"
     >
       <div class="logindialog">
-        <img src="imgs/loginDialog.png" alt="" @click="tianru" />
+        <img src="imgs/loginDialog.png" alt="" />
         <el-form
           :model="loginInfo"
           :rules="loginInfoRules"
@@ -418,6 +415,7 @@ export default ({
 
     // 弹出登录框
     loginDialog () {
+      console.log(this.loginDialogVisible);
       this.loginDialogVisible = true
     },
 
@@ -538,17 +536,10 @@ export default ({
       this.getSongDetail()
     },
 
-
-    // 自动填入！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！
-    tianru () {
-      this.loginInfo = {
-        phone: 15307470613,
-        password: 'LuoJiahao970327'
-      }
-    }
   },
   watch: {
     loginDialogVisible (n) {
+      console.log(n);
       if (!n) {
         this.$refs.loginRef.resetFields()
       }
@@ -771,5 +762,10 @@ body > .el-container {
 }
 .volumediv .el-slider {
   width: 100px;
+}
+.el-menu-item {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 </style>

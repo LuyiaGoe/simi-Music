@@ -234,6 +234,7 @@ export default {
   font-size: 20px;
   padding: 5px 10px;
   border-radius: 0 19px 19px 0;
+  margin-left: 0;
 }
 .el-icon-caret-right:before {
   font-size: 20px;
