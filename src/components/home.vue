@@ -216,6 +216,7 @@
             width="400"
             title="播放列表"
             trigger="click"
+            class="zindex"
           >
             <el-table :data="playListInfo" stripe @row-dblclick="playMusic">
               <el-table-column
@@ -484,6 +485,7 @@ export default ({
       let audio = document.querySelectorAll('.playMusicAudio')[0]
       audio.addEventListener("timeupdate", () => {
         if (!audio.duration) return this.isPlay = false
+        this.isPlay = true
         this.totalDuration = audio.duration | '00:00'
         this.musicDuration = audio.currentTime | '00:00'
         if (this.totalDuration === '00:00' && this.$store.playingId) {
@@ -494,7 +496,6 @@ export default ({
           this.switchMusic(1)
         }
       })
-      this.isPlay = true
     },
 
     // 拖动条变化
@@ -575,7 +576,7 @@ export default ({
   color: #333;
   text-align: center;
   line-height: 60px;
-  z-index: 99999;
+  z-index: 2000;
 }
 .el-footer {
   position: fixed;
