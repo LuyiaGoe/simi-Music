@@ -21,10 +21,20 @@
       </div>
 
       <!-- 操作区 -->
-      <el-button type="danger" icon="el-icon-caret-right" class="playAll">
+      <el-button
+        type="danger"
+        icon="el-icon-caret-right"
+        class="playAll"
+        @click="playAll()"
+      >
         全部播放
       </el-button>
-      <el-button type="danger" icon="el-icon-plus" class="addList"></el-button>
+      <el-button
+        type="danger"
+        icon="el-icon-plus"
+        class="addList"
+        @click="addAll()"
+      ></el-button>
 
       <!-- 搜索框 -->
       <el-input
@@ -41,7 +51,12 @@
 
     <!-- 歌曲清单 -->
     <div class="listArea">
-      <el-table :data="cloudSongList" stripe style="width: 100%">
+      <el-table
+        :data="cloudSongList"
+        stripe
+        style="width: 100%"
+        @row-dblclick="addMuiceInList"
+      >
         <el-table-column type="index"></el-table-column>
         <el-table-column label="歌曲名字">
           <template slot-scope="scope">
@@ -78,10 +93,22 @@ export default ({
     this.getCloudMusic()
   },
   methods: {
+    // 全部播放按钮，将歌单替换掉,并触发home的播放
+    playAll () {
+      this.$store.commit('switchPlayingList', this.cloudSongList)
+      this.$emit('play')
+    },
+    // 添加全部，往歌单后面添加本歌单内容
+    addAll () {
+      this.$store.commit('addPlayingList', { list: this.cloudSongList, concat: true })
+    },
+
     getCloudMusic () {
       this.$http.get('/user/cloud').then(res => {
-        console.log(res);
         this.cloudSongList = res.data.data
+        this.cloudSongList.map(item => {
+          item.id = item.songId
+        })
         this.cloudSize = res.data.size
         this.maxcloudSize = res.data.maxSize
       })
@@ -93,7 +120,14 @@ export default ({
       max = max.toFixed(1)
       nowsize = nowsize.toFixed(1)
       return `${nowsize}G/${max}G`
+    },
+    // 双击添加歌曲到歌单并播放
+    addMuiceInList (event) {
+      console.log(event);
+      this.$store.commit('addPlayingList', { song: event, isPlay: true })
+      this.$emit('play')
     }
+
   }
 })
 </script>

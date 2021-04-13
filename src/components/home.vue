@@ -14,7 +14,8 @@
           <el-input
             placeholder="搜索单曲,歌手,视频,歌单"
             size="mini"
-            suffix-icon="el-icon-search"
+            v-model="searchInput"
+            prefix-icon="el-icon-search"
           >
             <el-button slot="suffix" class="searchBtn" size="mini"></el-button>
           </el-input>
@@ -28,11 +29,11 @@
               class="userIcon_unlogin"
               @click="loginDialog"
             />
-            <a
-              href="javascript:void 0"
+            <el-tag
+              effect="plain"
               @click="loginDialogVisible = true"
               class="logina"
-              >登录</a
+              >登录</el-tag
             >
           </div>
           <div v-else class="logined">
@@ -49,6 +50,22 @@
               class="logoutBtn"
               >退出</el-button
             >
+          </div>
+          <div>
+            <a
+              href="https://gitee.com/LuyiaGoe/imitating-netease-cloud"
+              style="margin-left: 10px"
+              target="_blank"
+            >
+              <img src="../../public/imgs/gitee.png" alt="" />
+            </a>
+            <a
+              href="https://github.com/LuyiaGoe/simi-Music"
+              style="margin-left: 10px"
+              target="_blank"
+            >
+              <img src="../../public/imgs/github.png" alt="" />
+            </a>
           </div>
         </div>
       </el-header>
@@ -78,7 +95,9 @@
               <el-menu-item-group>
                 <span v-for="(item, index) in currentUserPlayList" :key="index">
                   <el-menu-item
-                    v-if="!item.subscribed"
+                    v-if="
+                      item.creator.avatarImgId == currentUserInfo.avatarImgId
+                    "
                     :index="'/songlist/' + item.id"
                   >
                     {{ item.name }}
@@ -92,7 +111,9 @@
               <el-menu-item-group>
                 <span v-for="(item, index) in currentUserPlayList" :key="index">
                   <el-menu-item
-                    v-if="item.subscribed"
+                    v-if="
+                      item.creator.avatarImgId !== currentUserInfo.avatarImgId
+                    "
                     :index="'/songlist/' + item.id"
                   >
                     {{ item.name }}
@@ -193,7 +214,35 @@
 
         <!--歌单、音量控制-->
         <div class="volumediv">
-          <img src="imgs/songList.png" alt="" />
+          <el-popover
+            placement="top"
+            width="400"
+            title="播放列表"
+            trigger="click"
+          >
+            <el-table :data="playListInfo" stripe @row-dblclick="playMusic">
+              <el-table-column
+                property="artist"
+                label="歌手"
+                width="80"
+              ></el-table-column>
+              <el-table-column
+                label="歌曲名"
+                property="songName"
+              ></el-table-column>
+              <el-table-column label="时长" width="80">
+                <template slot-scope="scope">
+                  {{ (scope.row.dt / 1000) | timeFormat }}
+                </template>
+              </el-table-column>
+            </el-table>
+            <img
+              slot="reference"
+              style="cursor: pointer"
+              src="imgs/songList.png"
+              alt=""
+            />
+          </el-popover>
           <img
             src="imgs/laba.png"
             v-if="silentflag == false"
@@ -282,6 +331,8 @@
 export default ({
   data () {
     return {
+      // 搜索框内容
+      searchInput: '',
       //播放音乐的链接
       musicUrl: '',
       //当前音乐详情对象
@@ -307,7 +358,7 @@ export default ({
       //默认是否在播放
       isPlay: false,
       //播放列表
-      playListInfo: window.localStorage.getItem('playList') === null ? [] : window.localStorage.getItem('playList').split(','),
+      playListInfo: [],
       //当前播放的歌单的所有歌曲的url和其他信息
       currentMusicListInfo: [],
       //当前播放的歌单的id
@@ -346,7 +397,9 @@ export default ({
     if (this.currentMusicListInfo !== null) {
       this.getUserPrivatePlayList()
     }
-    this.getSongDetail()
+    if (this.$store.state.playingId.length !== 0) {
+      this.getSongDetail()
+    }
   },
   methods: {
     // 返回首页
@@ -357,6 +410,7 @@ export default ({
     //查询用户私人歌单
     getUserPrivatePlayList () {
       this.$http.get('user/playlist', { params: { uid: this.currentUserInfo.userId } }).then(r => {
+        console.log(r);
         this.currentUserPlayList = r.data.playlist
         sessionStorage.setItem('userPlayList', JSON.stringify(this.currentUserPlayList))
       }).catch(err => err)
@@ -404,14 +458,27 @@ export default ({
     getSongDetail () {
       let playingId = this.$store.state.playingId
       this.$http.get(`/song/detail?ids=${playingId}`).then(res => {
-        console.log('detail');
-        console.log(res);
         this.music = res.data.songs[0]
       })
       this.$http.get(`/song/url?id=${playingId}`).then(res => {
         this.musicUrl = res.data.data[0].url
         this.getMusicInfo()
       })
+      this.getPlayListInfo()
+    },
+
+    // 获取页面右下角播放列表
+    getPlayListInfo () {
+      this.playListInfo = [...this.$store.state.playingList]
+      this.playListInfo.map(item => {
+        if (item.ar) {
+          item.artist = item.ar[0].name
+          item.songName = item.name
+          item.songId = item.id
+          item.id = item.songId
+        }
+      })
+      console.log(this.playListInfo);
     },
 
     // 获取播放信息
@@ -421,6 +488,9 @@ export default ({
         if (!audio.duration) return this.isPlay = false
         this.totalDuration = audio.duration | '00:00'
         this.musicDuration = audio.currentTime | '00:00'
+        if (this.totalDuration === '00:00' && this.$store.playingId) {
+          this.$message.error('该首无法播放')
+        }
         //当前歌曲播放完毕自动播放下一首
         if (audio.currentTime >= audio.duration) {
           this.switchMusic(1)
@@ -446,6 +516,7 @@ export default ({
     // 切换播放状态
     swichPlayStatus (num) {
       let audio = document.querySelector('.playMusicAudio')
+      console.log(audio);
       if (!num) {
         audio.pause()
       } else {
@@ -458,6 +529,13 @@ export default ({
     changeVolume () {
       let audio = this.$refs.audio
       audio.volume = this.musicVolume / 100
+    },
+
+    // 播放列表歌曲
+    playMusic (song) {
+      console.log(song);
+      this.$store.commit('addPlayingList', { song: song, isPlay: true })
+      this.getSongDetail()
     },
 
 
@@ -500,11 +578,13 @@ export default ({
   flex-grow: 1;
   padding: 60px 0 85px;
 }
+
 .el-header,
 .el-footer {
   color: #333;
   text-align: center;
   line-height: 60px;
+  z-index: 99999;
 }
 .el-footer {
   position: fixed;
@@ -536,7 +616,9 @@ export default ({
   overflow-y: auto;
   border-right: 1px solid rgb(230, 230, 230);
 }
-
+.search .el-input__inner {
+  background-color: rgb(225, 62, 62) !important;
+}
 .el-main {
   background-color: #fff;
   color: #333;
@@ -590,7 +672,10 @@ body > .el-container {
 }
 .logina {
   margin-left: 8px;
-  text-decoration: none;
+  background-color: rgb(236, 65, 65);
+  border: none;
+  color: #fff;
+  cursor: pointer;
 }
 .nickname {
   margin-left: 8px;

@@ -14,7 +14,12 @@
         >
           <el-col :span="7">
             <div style="position: relative">
-              <img :src="item.coverImgUrl" alt="" class="top_rank" />
+              <img
+                :src="item.coverImgUrl"
+                alt=""
+                class="top_rank"
+                @click="playAll(item.id)"
+              />
               <div class="updateFrequency">{{ item.updateFrequency }}</div>
             </div>
           </el-col>
@@ -24,6 +29,7 @@
               stripe
               style="width: 100%"
               :show-header="false"
+              @row-dblclick="addMuiceInList"
             >
               <el-table-column type="index" height="100"></el-table-column>
               <el-table-column>
@@ -45,7 +51,12 @@
           <div class="topRank_second_section">
             <el-col :span="7">
               <div style="position: relative">
-                <img :src="item.coverImgUrl" alt="" class="top_rank" />
+                <img
+                  :src="item.coverImgUrl"
+                  alt=""
+                  class="top_rank"
+                  @click="playAll(item.id)"
+                />
                 <div class="updateFrequency">{{ item.updateFrequency }}</div>
               </div>
             </el-col>
@@ -80,8 +91,18 @@
       <!-- 内容区域 -->
       <el-row :gutter="20">
         <el-col v-for="item in rankList.slice(4)" :key="item.id" :span="4">
-          <img :src="item.coverImgUrl" alt="" class="list_img" />
-          <h1 style="cursor: pointer" :title="item.name">
+          <img
+            @click="toSongListPage(item.id)"
+            style="cursor: pointer"
+            :src="item.coverImgUrl"
+            alt=""
+            class="list_img"
+          />
+          <h1
+            @click="toSongListPage(item.id)"
+            style="cursor: pointer"
+            :title="item.name"
+          >
             {{ item.name | nameStringFilter }}
           </h1>
         </el-col>
@@ -99,11 +120,44 @@ export default {
     }
   },
   methods: {
+    // 查找歌单排行榜页面
     getRankList () {
       this.$http.get('/toplist/detail').then(res => {
-        console.log(res)
         this.rankList = res.data.list
+        console.log(res);
       })
+    },
+
+    // 跳转到歌单页面
+    toSongListPage (id) {
+      this.$router.push(`/songlist/${id}`)
+    },
+
+    // 播放歌单
+    playAll (id) {
+      this.$http.get(`/playlist/detail?id=${id}`).then(res => {
+        console.log(res);
+        this.$store.commit('switchPlayingList', res.data.playlist.tracks)
+        this.$emit('play')
+      })
+    },
+
+    // 播放歌曲
+    addMuiceInList (event) {
+      console.log(event);
+      let song = {}
+      this.rankList.some(item => {
+        item.tracks.some((item1, i) => {
+          if (item1.first == event.first) {
+            this.$http.get(`/playlist/detail?id=${item.id}`).then(res => {
+              song = res.data.playlist.tracks[i]
+              this.$store.commit('addPlayingList', { song: song, isPlay: true })
+            })
+            return
+          }
+        })
+      })
+      this.$emit('play')
     }
   },
   created () {

@@ -205,8 +205,6 @@ export default ({
     gethotvideo () {
       this.$http.get(`/mv/exclusive/rcmd?limit=8`).then(res => {
         this.hotvideoList = res.data.data
-        console.log(res)
-        console.log(this.hotvideoList);
       })
     },
     // 跳转到mv播放

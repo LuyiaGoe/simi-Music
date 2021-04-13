@@ -74,8 +74,18 @@
               }}
             </div>
           </div>
-          <img :src="item.coverImgUrl" alt="" class="list_img" />
-          <h1 style="cursor: pointer" :title="item.name">
+          <img
+            style="cursor: pointer"
+            @click="toSongListPage(item.id)"
+            :src="item.coverImgUrl"
+            alt=""
+            class="list_img"
+          />
+          <h1
+            style="cursor: pointer"
+            @click="toSongListPage(item.id)"
+            :title="item.name"
+          >
             {{ item.name }}
           </h1>
         </div>
@@ -128,6 +138,11 @@ export default {
           }
         })
       })
+    },
+
+    // 跳转到歌单页面
+    toSongListPage (id) {
+      this.$router.push(`/songlist/${id}`)
     },
 
     // 选中歌单分类并更改激活标签

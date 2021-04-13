@@ -19,7 +19,6 @@ export default {
   methods: {
     getScrib () {
       this.$http.get('/playlist/subscribers', { params: { id: this.$route.params.id } }).then(res => {
-        console.log(res);
         this.subscribInfo = res.data.subscribers
       })
     }

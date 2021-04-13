@@ -36,6 +36,7 @@
             type="danger"
             icon="el-icon-plus"
             class="addList"
+            @click="addAll()"
           ></el-button>
           <el-button
             round
@@ -103,9 +104,7 @@
         :router="true"
       >
         <el-menu-item :index="'/list/' + pageID">歌曲列表</el-menu-item>
-        <el-menu-item :index="'/comment/' + pageID">{{
-          "评论(" + songlist.playCount + ")"
-        }}</el-menu-item>
+        <el-menu-item :index="'/comment/' + pageID">{{ "评论" }}</el-menu-item>
         <el-menu-item :index="'/subscribed/' + pageID">收藏者</el-menu-item>
       </el-menu>
 
@@ -134,12 +133,14 @@ export default {
     this.activeIndex = this.$route.path
     this.pageID = this.$route.params.id
     this.getSonglist()
-    console.log(this.songlist);
   },
   methods: {
     // 按照route传来的id获取歌单信息
     getSonglist () {
       let listId = this.$route.params.id
+      this.$http.get(`/playlist/detail?id=${listId}`).then(res => {
+        this.songlist = res.data.playlist
+      })
       // 用户歌单清单
       let userSongList = JSON.parse(sessionStorage.getItem('userPlayList'))
 
@@ -159,9 +160,15 @@ export default {
       this.$emit('play')
     },
 
+    // 添加全部，往歌单后面添加本歌单内容
+    addAll () {
+      this.$store.commit('addPlayingList', { list: this.playingList, concat: true })
+    },
+
     // 从子路由处获取到的歌单信息
     getplayingList (detail) {
       this.playingList = detail
+      this.$emit('play')
     }
   }
 }

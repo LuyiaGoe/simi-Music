@@ -6,7 +6,7 @@
       <el-tab-pane label="排行榜" name="musicRank"> </el-tab-pane>
       <el-tab-pane label="歌手" name="singerList"> </el-tab-pane>
       <el-tab-pane label="最新音乐" name="newMusicList"> </el-tab-pane>
-      <router-view> </router-view>
+      <router-view @play="playMusic"> </router-view>
     </el-tabs>
   </div>
 </template>
@@ -30,6 +30,10 @@ export default ({
     // 刷新后根据页面，激活相对应的tab标签
     activeTab () {
       this.tabname = this.$route.path.slice(1)
+    },
+    // 触发home的播放
+    playMusic () {
+      this.$emit('play')
     }
   }
 })

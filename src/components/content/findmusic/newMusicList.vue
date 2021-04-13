@@ -34,6 +34,7 @@
         :data="newListInfo"
         stripe
         style="width: 100%"
+        @row-dblclick="addMuiceInList"
         :show-header="false"
       >
         <el-table-column type="index"> </el-table-column>
@@ -87,16 +88,13 @@ export default {
     getNewList () {
       this.$http.get('/top/song', { params: this.queryInfo }).then(res => {
         this.newListInfo = res.data.data
-        console.log(res)
       })
     },
     // 获取最热大碟
     getHotList () {
-      console.log(1)
       this.$http.get('/top/album', { params: this.queryInfo2 }).then(res => {
         this.newListInfo = res.data.data
-        console.log(res)
-      }).catch(err => console.log(err))
+      }).catch(err => err)
     },
     // 切换类型
     changeType (num) {
@@ -116,7 +114,14 @@ export default {
       } else {
         this.getHotList()
       }
+    },
+    // 双击添加歌曲到歌单并播放
+    addMuiceInList (event) {
+      console.log(event);
+      this.$store.commit('addPlayingList', { song: event, isPlay: true })
+      this.$emit('play')
     }
+
   }
 }
 </script>

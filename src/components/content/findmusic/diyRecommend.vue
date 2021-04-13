@@ -33,8 +33,17 @@
                 }}
               </div>
             </div>
-            <img :src="item.coverImgUrl" alt="" />
-            <h1 style="cursor: pointer" :title="item.name">
+            <img
+              :src="item.coverImgUrl"
+              @click="toSongListPage(item.id)"
+              alt=""
+              style="cursor: pointer"
+            />
+            <h1
+              style="cursor: pointer"
+              :title="item.name"
+              @click="toSongListPage(item.id)"
+            >
               {{
                 item.name.toString().length >= 30
                   ? item.name.toString().substring(0, 27) + "···"
@@ -59,9 +68,14 @@
           :key="item.coverImgId"
         >
           <div class="container_musicList">
-            <img :src="item.sPicUrl" alt="" />
+            <img
+              :src="item.sPicUrl"
+              alt=""
+              @click="toMvPage(item.id)"
+              style="cursor: pointer"
+            />
             <h1
-              @click="toVideoPage(item.id)"
+              @click="toMvPage(item.id)"
               style="cursor: pointer; text-align: center"
             >
               {{ item.name }}
@@ -84,6 +98,7 @@
             :show-header="false"
             stripe
             style="width: 100%"
+            @row-dblclick="addMuiceInList"
           >
             <el-table-column type="index"> </el-table-column>
             <el-table-column prop="coverImgUrl" width="100">
@@ -107,6 +122,7 @@
             :show-header="false"
             stripe
             style="width: 100%"
+            @row-dblclick="addMuiceInList"
           >
             <el-table-column type="index"> </el-table-column>
             <el-table-column prop="coverImgUrl" width="100">
@@ -175,6 +191,7 @@ export default {
     getprivateListInfo () {
       this.$http.get('/personalized/privatecontent').then(res => {
         this.privateListInfo = res.data.result
+        console.log(res);
       })
     },
 
@@ -184,6 +201,23 @@ export default {
         this.newMusicList = res.data.result
       })
     },
+
+    // 双击添加歌曲到歌单并播放
+    addMuiceInList (event) {
+      console.log(event);
+      this.$store.commit('addPlayingList', { song: event, isPlay: true })
+      this.$emit('play')
+    },
+
+    // 跳转到歌单页面
+    toSongListPage (id) {
+      this.$router.push(`/songlist/${id}`)
+    },
+
+    // 跳转到mv页面
+    toMvPage (id) {
+      this.$router.push(`/videoPlayPage/${id}`)
+    }
   }
 }
 </script>
