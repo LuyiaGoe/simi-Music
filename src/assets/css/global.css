@@ -53,6 +53,9 @@ body,
   font-weight: 800;
   font-size: 17px;
 }
+.el-tabs__nav-wrap::after{
+  height: 0;
+}
 /* 头部搜索框 */
 .search .el-input__inner {
   background-color: rgb(225, 62, 62) ;
@@ -128,4 +131,4 @@ body,
   transform: translateY(10px);
 }
 
-/* build后单独拎出来改的部分 */
+

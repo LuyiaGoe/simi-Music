@@ -10,7 +10,8 @@ import './plugins/element.js'
 import './assets/css/global.css'
 import store from './store'
 
-axios.defaults.baseURL = 'https://autumnfish.cn/' // 直接用网址了，不跨域了，不然静态网页无法直接访问了 *为axios请求设置根路径,跨域配置放在vue.config.js中
+// axios.defaults.baseURL = 'https://netease-cloud-music-api-three-lyart.vercel.app/' // 直接用网址了，不跨域了，不然静态网页无法直接访问了 
+axios.defaults.baseURL = '/api' // 为axios请求设置根路径,跨域配置放在vue.config.js中
 // 在request拦截器中添加进度条
 axios.interceptors.request.use(config => { // 设置请求头
   nprogress.start()

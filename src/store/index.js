@@ -35,13 +35,9 @@ export default new Vuex.Store({
 
     // 切换歌单
     switchPlayingList (state, newList) {
-      console.log(1);
-      console.log(newList);
       state.playingList = new Set(newList)
       // 切换完后立马置换正在播放的歌曲  为新歌单的第一首
       state.playingId = newList[0].id
-      let arr = [...state.playingList]
-      console.log(arr);
     },
 
     // 往歌单内添加歌曲,isPlay与否决定是否立即播放,concat与否决定是否添加在当前歌单后面

@@ -16,6 +16,7 @@
             size="mini"
             v-model="searchInput"
             prefix-icon="el-icon-search"
+            @keypress.enter.native="search"
           >
             <el-button slot="suffix" class="searchBtn" size="mini"></el-button>
           </el-input>
@@ -124,7 +125,11 @@
         <!-- 主体区域 -->
         <el-main>
           <!-- play事件用于子组件（歌单页面的playAll触发）触发播放 -->
-          <router-view :key="$route.path" @play="getSongDetail"></router-view>
+          <router-view
+            :key="$route.path"
+            @play="getSongDetail"
+            :searchKeyWords="searchInput"
+          ></router-view>
         </el-main>
       </div>
 
@@ -218,16 +223,13 @@
             trigger="click"
             class="zindex"
           >
-            <el-table :data="playListInfo" stripe @row-dblclick="playMusic">
+            <el-table :data="playListInfo" stripe @row-click="playMusic">
               <el-table-column
-                property="artist"
-                label="歌手"
+                property="songName"
+                label="歌曲名"
                 width="80"
               ></el-table-column>
-              <el-table-column
-                label="歌曲名"
-                property="songName"
-              ></el-table-column>
+              <el-table-column label="歌手" property="artist"></el-table-column>
               <el-table-column label="时长" width="80">
                 <template slot-scope="scope">
                   {{ (scope.row.dt / 1000) | timeFormat }}
@@ -408,7 +410,6 @@ export default ({
     //查询用户私人歌单
     getUserPrivatePlayList () {
       this.$http.get('user/playlist', { params: { uid: this.currentUserInfo.userId } }).then(r => {
-        console.log(r);
         this.currentUserPlayList = r.data.playlist
         sessionStorage.setItem('userPlayList', JSON.stringify(this.currentUserPlayList))
       }).catch(err => err)
@@ -416,7 +417,6 @@ export default ({
 
     // 弹出登录框
     loginDialog () {
-      console.log(this.loginDialogVisible);
       this.loginDialogVisible = true
     },
 
@@ -439,6 +439,11 @@ export default ({
           this.loginDialogVisible = false
         })
       })
+    },
+
+    // 搜索
+    search () {
+      this.$router.push(`/search/${this.searchInput}`)
     },
 
     // 退出登录
@@ -477,7 +482,6 @@ export default ({
           item.id = item.songId
         }
       })
-      console.log(this.playListInfo);
     },
 
     // 获取播放信息
@@ -515,7 +519,6 @@ export default ({
     // 切换播放状态
     swichPlayStatus (num) {
       let audio = document.querySelector('.playMusicAudio')
-      console.log(audio);
       if (!num) {
         audio.pause()
       } else {
@@ -532,7 +535,6 @@ export default ({
 
     // 播放列表歌曲
     playMusic (song) {
-      console.log(song);
       this.$store.commit('addPlayingList', { song: song, isPlay: true })
       this.getSongDetail()
     },
@@ -540,7 +542,6 @@ export default ({
   },
   watch: {
     loginDialogVisible (n) {
-      console.log(n);
       if (!n) {
         this.$refs.loginRef.resetFields()
       }
@@ -577,6 +578,7 @@ export default ({
   text-align: center;
   line-height: 60px;
   z-index: 2000;
+  min-width: 1300px;
 }
 .el-footer {
   position: fixed;
@@ -601,6 +603,8 @@ export default ({
   height: 100%;
 }
 .el-aside {
+  max-height: 100%;
+  overflow: auto;
   background-color: #fff;
   color: #333;
   text-align: center;

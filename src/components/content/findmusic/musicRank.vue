@@ -29,7 +29,7 @@
               stripe
               style="width: 100%"
               :show-header="false"
-              @row-dblclick="addMuiceInList"
+              @row-click="addMuiceInList"
             >
               <el-table-column type="index" height="100"></el-table-column>
               <el-table-column>
@@ -124,7 +124,6 @@ export default {
     getRankList () {
       this.$http.get('/toplist/detail').then(res => {
         this.rankList = res.data.list
-        console.log(res);
       })
     },
 
@@ -136,7 +135,6 @@ export default {
     // 播放歌单
     playAll (id) {
       this.$http.get(`/playlist/detail?id=${id}`).then(res => {
-        console.log(res);
         this.$store.commit('switchPlayingList', res.data.playlist.tracks)
         this.$emit('play')
       })
@@ -144,7 +142,6 @@ export default {
 
     // 播放歌曲
     addMuiceInList (event) {
-      console.log(event);
       let song = {}
       this.rankList.some(item => {
         item.tracks.some((item1, i) => {

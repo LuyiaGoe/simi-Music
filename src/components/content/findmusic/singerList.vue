@@ -36,8 +36,17 @@
     <el-row :gutter="20">
       <el-col v-for="item in artList" :key="item.img1v1Id" :span="4">
         <div class="container_musicList">
-          <img :src="item.img1v1Url" alt="" class="list_img" />
-          <h1 style="cursor: pointer" :title="item.name">
+          <img
+            :src="item.img1v1Url"
+            alt=""
+            class="list_img"
+            @click="toSingerPage(item.id)"
+          />
+          <h1
+            style="cursor: pointer"
+            :title="item.name"
+            @click="toSingerPage(item.id)"
+          >
             {{ item.name }}
           </h1>
         </div>
@@ -93,6 +102,10 @@ export default {
     this.getArtistList()
   },
   methods: {
+    // 跳转到歌手页面
+    toSingerPage (id) {
+      this.$router.push(`/singer/${id}`)
+    },
     // 获取歌手列表
     getArtistList () {
       this.$http.get('/artist/list', { params: this.queryInfo }).then(res => {
@@ -143,6 +156,7 @@ export default {
 }
 .list_img {
   width: 100%;
+  cursor: pointer;
 }
 h1 {
   font-size: 8px;

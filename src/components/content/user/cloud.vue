@@ -55,7 +55,7 @@
         :data="cloudSongList"
         stripe
         style="width: 100%"
-        @row-dblclick="addMuiceInList"
+        @row-click="addMuiceInList"
       >
         <el-table-column type="index"></el-table-column>
         <el-table-column label="歌曲名字">
@@ -123,7 +123,6 @@ export default ({
     },
     // 双击添加歌曲到歌单并播放
     addMuiceInList (event) {
-      console.log(event);
       this.$store.commit('addPlayingList', { song: event, isPlay: true })
       this.$emit('play')
     }

@@ -109,7 +109,7 @@
       </el-menu>
 
       <!-- 内容路由 -->
-      <router-view @playingList="getplayingList"></router-view>
+      <router-view :songlist="songlist" @playingList="play"></router-view>
     </div>
   </div>
 </template>
@@ -121,7 +121,7 @@ export default {
       //页面id号
       pageID: '',
       // 歌单清单
-      songlist: {},
+      songlist: [],
       // 用户歌单收藏按钮禁用flag
       userListFlag: true,
       activeIndex: '/list/',
@@ -135,11 +135,18 @@ export default {
     this.getSonglist()
   },
   methods: {
+    // 播放
+    play () {
+      this.$emit('play')
+    },
+
     // 按照route传来的id获取歌单信息
     getSonglist () {
       let listId = this.$route.params.id
       this.$http.get(`/playlist/detail?id=${listId}`).then(res => {
         this.songlist = res.data.playlist
+      }).catch(err => {
+        err
       })
       // 用户歌单清单
       let userSongList = JSON.parse(sessionStorage.getItem('userPlayList'))
@@ -156,7 +163,7 @@ export default {
 
     // 全部播放按钮，将歌单替换掉,并触发home的播放
     playAll () {
-      this.$store.commit('switchPlayingList', this.playingList)
+      this.$store.commit('switchPlayingList', this.songlist.tracks)
       this.$emit('play')
     },
 
@@ -165,11 +172,20 @@ export default {
       this.$store.commit('addPlayingList', { list: this.playingList, concat: true })
     },
 
-    // 从子路由处获取到的歌单信息
-    getplayingList (detail) {
-      this.playingList = detail
-      this.$emit('play')
-    }
+    // 获取到列表详情，即歌单
+    getListDet () {
+      this.$http.get('/playlist/detail', { params: { id: this.$route.params.id } }).then(res => {
+        let songsId = []
+        res.data.playlist.trackIds.map(item => songsId.push(item.id))
+        this.$http.get(`/song/detail?ids=${songsId}`).then(res => {
+          this.songlist = res.data.songs
+          this.passDetail()
+        })
+      }).catch(err => {
+        err
+      })
+    },
+
   }
 }
 </script>

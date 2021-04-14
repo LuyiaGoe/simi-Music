@@ -17,6 +17,8 @@ import videoPage from '../components/content/video/videoPage.vue'
 import video from '../components/content/video/video.vue'
 import mv from '../components/content/video/mv.vue'
 import videoPlayPage from '../components/content/video/videoPlayPage.vue'
+import search from '../components/content/search/search.vue'
+import singer from '../components/content/singer/singer.vue'
 
 
 Vue.use(VueRouter) //启用路由
@@ -55,6 +57,10 @@ const routes = [
         ]
       }, {
         path: '/videoPlayPage/:id', component: videoPlayPage
+      }, {
+        path: '/search/:id', component: search
+      }, {
+        path: '/singer/:id', component: singer
       }
     ]
   }

@@ -98,7 +98,7 @@
             :show-header="false"
             stripe
             style="width: 100%"
-            @row-dblclick="addMuiceInList"
+            @row-click="addMuiceInList"
           >
             <el-table-column type="index"> </el-table-column>
             <el-table-column prop="coverImgUrl" width="100">
@@ -122,7 +122,7 @@
             :show-header="false"
             stripe
             style="width: 100%"
-            @row-dblclick="addMuiceInList"
+            @row-click="addMuiceInList"
           >
             <el-table-column type="index"> </el-table-column>
             <el-table-column prop="coverImgUrl" width="100">
@@ -191,7 +191,6 @@ export default {
     getprivateListInfo () {
       this.$http.get('/personalized/privatecontent').then(res => {
         this.privateListInfo = res.data.result
-        console.log(res);
       })
     },
 
@@ -204,7 +203,6 @@ export default {
 
     // 双击添加歌曲到歌单并播放
     addMuiceInList (event) {
-      console.log(event);
       this.$store.commit('addPlayingList', { song: event, isPlay: true })
       this.$emit('play')
     },
