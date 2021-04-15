@@ -4,21 +4,21 @@
     <div class="headArea">
       <!-- 图片 -->
       <div class="imgdiv">
-        <img :src="songlist.coverImgUrl" alt="" class="listPic" />
+        <img :src="songlistInfo.coverImgUrl" alt="" class="listPic" />
       </div>
       <!-- 歌单信息 -->
       <div>
         <div>
           <el-tag type="danger" effect="plain">歌单</el-tag>
-          <span class="listtitle">{{ songlist.name }}</span>
+          <span class="listtitle">{{ songlistInfo.name }}</span>
         </div>
         <div style="margin-top: 10px">
-          <img :src="songlist.creator.avatarUrl" class="userIcon_unlogin" />
+          <img :src="songlistInfo.creator.avatarUrl" class="userIcon_unlogin" />
           <span style="color: darkblue" class="font12">{{
-            songlist.creator.nickname
+            songlistInfo.creator.nickname
           }}</span>
           <span style="margin-left: 10px" class="font12"
-            >{{ songlist.createTime | dateFormatToYMD }}{{ "创建" }}</span
+            >{{ songlistInfo.createTime | dateFormatToYMD }}{{ "创建" }}</span
           >
         </div>
 
@@ -43,32 +43,32 @@
             disabled
             icon="el-icon-folder-add"
             v-if="!userListFlag"
-            >{{ "收藏 (" + songlist.subscribedCount + ")" }}</el-button
+            >{{ "收藏 (" + songlistInfo.subscribedCount + ")" }}</el-button
           >
           <el-button round icon="el-icon-folder-add" v-if="userListFlag">{{
-            "收藏 (" + songlist.subscribedCount + ")"
+            "收藏 (" + songlistInfo.subscribedCount + ")"
           }}</el-button>
         </div>
 
         <!-- 标签、播放、简介信息 -->
         <div>
           <ul class="listInfo">
-            <li v-if="!songlist.ordered">
+            <li v-if="!songlistInfo.ordered">
               <span style="display: flex"
                 >标签:
                 <span
-                  v-if="songlist.tags.length == 0"
+                  v-if="songlistInfo.tags.length == 0"
                   style="margin-left: 10px; cursor: pointer"
                   >编辑标签</span
                 >
                 <el-breadcrumb
                   separator="/"
                   style="line-height: 21px; margin-left: 10px"
-                  v-if="songlist.tags.length !== 0"
+                  v-if="songlistInfo.tags.length !== 0"
                 >
                   <el-breadcrumb-item
                     :to="{ path: '/' }"
-                    v-for="(item, index) in songlist.tags"
+                    v-for="(item, index) in songlistInfo.tags"
                     :key="index"
                   >
                     {{ item }}
@@ -78,14 +78,14 @@
             </li>
             <li>
               <span style="margin-right: 10px">歌曲:</span>
-              {{ songlist.trackCount }}
+              {{ songlistInfo.trackCount }}
               <span style="margin: 0 10px">播放次数:</span>
-              {{ songlist.playCount }}
+              {{ songlistInfo.playCount }}
             </li>
-            <li v-if="!songlist.ordered">
+            <li v-if="!songlistInfo.ordered">
               <span style="margin-right: 10px">简介:</span>
-              <span v-if="songlist.description">{{
-                songlist.description
+              <span v-if="songlistInfo.description">{{
+                songlistInfo.description
               }}</span>
               <span v-else style="cursor: pointer">添加简介</span>
             </li>
@@ -122,6 +122,8 @@ export default {
       pageID: '',
       // 歌单清单
       songlist: [],
+      // 歌单信息
+      songlistInfo: [],
       // 用户歌单收藏按钮禁用flag
       userListFlag: true,
       activeIndex: '/list/',
@@ -132,7 +134,7 @@ export default {
   created () {
     this.activeIndex = this.$route.path
     this.pageID = this.$route.params.id
-    this.getSonglist()
+    this.getSonglistInfo()
   },
   methods: {
     // 播放
@@ -141,10 +143,17 @@ export default {
     },
 
     // 按照route传来的id获取歌单信息
-    getSonglist () {
+    getSonglistInfo () {
       let listId = this.$route.params.id
       this.$http.get(`/playlist/detail?id=${listId}`).then(res => {
-        this.songlist = res.data.playlist
+        this.songlistInfo = res.data.playlist
+        let songsId = []
+        res.data.playlist.trackIds.map(item => songsId.push(item.id))
+        this.$http.get(`/song/detail?ids=${songsId}`).then(res => {
+          this.songlist = res.data.songs
+          console.log(this.songlist);
+        })
+        this.getListDet
       }).catch(err => {
         err
       })
@@ -163,7 +172,7 @@ export default {
 
     // 全部播放按钮，将歌单替换掉,并触发home的播放
     playAll () {
-      this.$store.commit('switchPlayingList', this.songlist.tracks)
+      this.$store.commit('switchPlayingList', this.songlist)
       this.$emit('play')
     },
 
@@ -179,6 +188,7 @@ export default {
         res.data.playlist.trackIds.map(item => songsId.push(item.id))
         this.$http.get(`/song/detail?ids=${songsId}`).then(res => {
           this.songlist = res.data.songs
+          console.log(res);
           this.passDetail()
         })
       }).catch(err => {

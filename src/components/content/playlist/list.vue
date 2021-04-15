@@ -30,7 +30,7 @@ export default {
     }
   },
   created () {
-    this.playDetails = this.songlist.tracks
+    this.playDetails = this.songlist
   },
   methods: {
     // 添加歌曲到歌单并播放
