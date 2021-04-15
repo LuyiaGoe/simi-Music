@@ -151,7 +151,6 @@ export default {
         res.data.playlist.trackIds.map(item => songsId.push(item.id))
         this.$http.get(`/song/detail?ids=${songsId}`).then(res => {
           this.songlist = res.data.songs
-          console.log(this.songlist);
         })
         this.getListDet
       }).catch(err => {
@@ -188,7 +187,6 @@ export default {
         res.data.playlist.trackIds.map(item => songsId.push(item.id))
         this.$http.get(`/song/detail?ids=${songsId}`).then(res => {
           this.songlist = res.data.songs
-          console.log(res);
           this.passDetail()
         })
       }).catch(err => {

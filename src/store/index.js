@@ -55,13 +55,22 @@ export default new Vuex.Store({
           arr.push(params.song)
           state.playingId = params.song.id
         } else {
-          arr.some((item, index) => {
-            if (item.id == state.playingId) {
-              // 新建一个歌单，将正在播放的歌曲前面的歌截取放一个新的列表中，并push新歌
-              arr.splice(index + 1, 0, params.song)
+          let isExist = false
+          arr.some(item => {
+            if (item.id == params.song.id) {
+              isExist = true
               return true
             }
           })
+          if (!isExist) {
+            arr.some((item, index) => {
+              if (item.id == state.playingId) {
+                // 将新加入的歌放到正在播放的歌后面
+                arr.splice(index + 1, 0, params.song)
+                return true
+              }
+            })
+          }
         }
       }
       state.playingList = new Set(arr)

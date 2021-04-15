@@ -49,7 +49,7 @@ export default {
       let keywords = this.searchKeyWords
       // 搜索单曲
       this.$http.get(`/cloudsearch?keywords=${keywords}`, { params: { type: 1 } }).then(res => {
-        this.songList = res.data.result
+        this.songList = res.data.result.songs
         this.songList.tracks = res.data.result.songs
       })
       // 专辑

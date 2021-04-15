@@ -466,7 +466,7 @@ export default ({
       this.$http.get(`/song/url?id=${playingId}`).then(res => {
         this.musicUrl = res.data.data[0].url
         this.getMusicInfo()
-      })
+      }).catch(res => console.log(res))
       this.getPlayListInfo()
     },
 
