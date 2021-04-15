@@ -52,7 +52,7 @@
     <!-- 歌曲清单 -->
     <div class="listArea">
       <el-table
-        :data="cloudSongList"
+        :data="showList"
         stripe
         style="width: 100%"
         @row-click="addMuiceInList"
@@ -65,7 +65,7 @@
         </el-table-column>
         <el-table-column prop="artist" label="歌手"> </el-table-column>
         <el-table-column prop="album" label="专辑"> </el-table-column>
-        <el-table-column label="专辑" width="80">
+        <el-table-column width="80">
           <template slot-scope="scope">
             {{ (scope.row.simpleSong.dt / 1000) | timeFormat }}
           </template>
@@ -80,6 +80,8 @@
 export default ({
   data () {
     return {
+      // 云盘展示列表
+      showList: [],
       // 云盘歌曲列表
       cloudSongList: [],
       // 云盘容量
@@ -90,12 +92,15 @@ export default ({
     }
   },
   created () {
+    if (window.localStorage.getItem('currentUserInfo') === 'null') {
+      return this.$message.error('需要登录获取云盘数据!')
+    }
     this.getCloudMusic()
   },
   methods: {
     // 全部播放按钮，将歌单替换掉,并触发home的播放
     playAll () {
-      this.$store.commit('switchPlayingList', this.cloudSongList)
+      this.$store.commit('switchPlayingList', this.showList)
       this.$emit('play')
     },
     // 添加全部，往歌单后面添加本歌单内容
@@ -109,6 +114,7 @@ export default ({
         this.cloudSongList.map(item => {
           item.id = item.songId
         })
+        this.showList = this.cloudSongList
         this.cloudSize = res.data.size
         this.maxcloudSize = res.data.maxSize
       })
@@ -125,8 +131,21 @@ export default ({
     addMuiceInList (event) {
       this.$store.commit('addPlayingList', { song: event, isPlay: true })
       this.$emit('play')
+    },
+  },
+  watch: {
+    searchInput () {
+      this.showList = []
+      this.cloudSongList.map(item => {
+        if (item.fileName.indexOf(this.searchInput) !== -1) {
+          return this.showList.push(item)
+        } else if (item.artist.indexOf(this.searchInput) !== -1) {
+          return this.showList.push(item)
+        } else if (item.album.indexOf(this.searchInput) !== -1) {
+          return this.showList.push(item)
+        }
+      })
     }
-
   }
 })
 </script>

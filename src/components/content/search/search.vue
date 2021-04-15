@@ -8,10 +8,10 @@
         <list :list="songList"></list>
       </el-tab-pane>
       <el-tab-pane label="专辑" name="singerList">
-        <list :list="albumList"></list>
+        <album :list="albumList"></album>
       </el-tab-pane>
       <el-tab-pane label="歌单" name="playList">
-        <list :list="playList"></list>
+        <song :list="playList"></song>
       </el-tab-pane>
     </el-tabs>
   </div>
@@ -19,7 +19,9 @@
 
 <script>
 import listPart from 'c:\\Users\\LuyiaGoe\\Desktop\\vue\\vue-pro-03\\src\\components\\content\\playlist\\list.vue'
-import list from 'c:/Users/LuyiaGoe/Desktop/vue/vue-pro-03/src/components/content/search/searchlist.vue'
+import list from 'C:/Users/LuyiaGoe/Desktop/vue/vue-pro-03/src/components/content/search/searchsingerList.vue'
+import song from 'C:/Users/LuyiaGoe/Desktop/vue/vue-pro-03/src/components/content/search/songList.vue'
+import album from 'C:/Users/LuyiaGoe/Desktop/vue/vue-pro-03/src/components/content/search/albumList.vue'
 export default {
   props: ['searchKeyWords'],
   data () {
@@ -38,6 +40,8 @@ export default {
   components: {
     listPart: listPart,
     list,
+    song,
+    album
   },
   methods: {
     // 关键词搜索
@@ -54,7 +58,7 @@ export default {
         this.albumList.tracks = res.data.result.albums
       })
       // 歌手
-      this.$http.get(`/cloudsearch?keywords=${keywords}`, { params: { type: 100 } }).then(res => {
+      this.$http.get(`/search?keywords=${keywords}`, { params: { type: 100, limit: 5 } }).then(res => {
         this.singerList = res.data.result
         this.singerList.tracks = res.data.result.artists
       })
@@ -62,7 +66,6 @@ export default {
       this.$http.get(`/cloudsearch?keywords=${keywords}`, { params: { type: 1000 } }).then(res => {
         this.playList = res.data.result
         this.playList.tracks = res.data.result.playlists
-        console.log(res);
       })
     },
 

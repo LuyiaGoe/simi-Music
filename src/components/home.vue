@@ -302,10 +302,11 @@
           <el-form-item prop="password">
             <el-input
               style="display: block; margin: 0 auto; width: 100%"
-              prefix-icon="el-icon-user"
+              prefix-icon="el-icon-lock"
               v-model="loginInfo.password"
-              placeholder="请输入手机号"
+              placeholder="请输入密码"
               type="password"
+              @keyup.enter.native="login"
             ></el-input>
           </el-form-item>
         </el-form>
@@ -363,8 +364,6 @@ export default ({
       currentMusicListInfo: [],
       //当前播放的歌单的id
       songListInfo: [],
-      // 展示右边的歌单对话框
-      showRightPlayListDialog: false,
       //展示登录的对话框
       loginDialogVisible: false,
       //登录的信息
@@ -488,8 +487,6 @@ export default ({
     getMusicInfo () {
       let audio = document.querySelectorAll('.playMusicAudio')[0]
       audio.addEventListener("timeupdate", () => {
-        if (!audio.duration) return this.isPlay = false
-        this.isPlay = true
         this.totalDuration = audio.duration | '00:00'
         this.musicDuration = audio.currentTime | '00:00'
         if (this.totalDuration === '00:00' && this.$store.playingId) {
@@ -500,6 +497,9 @@ export default ({
           this.switchMusic(1)
         }
       })
+      if (this.totalDuration !== '00:00') {
+        this.isPlay = true
+      }
     },
 
     // 拖动条变化
@@ -552,6 +552,15 @@ export default ({
       } else {
         this.silentflag = false
       }
+    },
+    musicDuration (n) {
+      if (n == 'NaN:NaN') {
+        n = '00:00'
+      }
+    },
+    // 用户信息变更时，强制刷新页面
+    currentUserInfo () {
+      this.$router.go(0)
     }
   }
 })

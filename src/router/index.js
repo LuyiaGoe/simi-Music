@@ -19,6 +19,7 @@ import mv from '../components/content/video/mv.vue'
 import videoPlayPage from '../components/content/video/videoPlayPage.vue'
 import search from '../components/content/search/search.vue'
 import singer from '../components/content/singer/singer.vue'
+import album from '../components/content/album'
 
 
 Vue.use(VueRouter) //启用路由
@@ -61,6 +62,8 @@ const routes = [
         path: '/search/:id', component: search
       }, {
         path: '/singer/:id', component: singer
+      }, {
+        path: '/album/:id', component: album
       }
     ]
   }
