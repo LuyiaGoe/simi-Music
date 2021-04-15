@@ -41,7 +41,7 @@ export default {
   },
   watch: {
     songlist (n) {
-      this.playDetails = n.tracks
+      this.playDetails = n
     }
   }
 }
