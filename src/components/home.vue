@@ -227,7 +227,7 @@
               <el-table-column
                 property="songName"
                 label="歌曲名"
-                width="80"
+                width="180"
               ></el-table-column>
               <el-table-column label="歌手" property="artist"></el-table-column>
               <el-table-column label="时长" width="80">
